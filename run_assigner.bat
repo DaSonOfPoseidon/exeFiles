@@ -1,16 +1,18 @@
 @echo off
-cd /d "%~dp0"
-set PYLIB=embedded_python\Lib
-set PYTHONPYCACHEPREFIX=./logs/pycache
-set TCL_LIBRARY=%~dp0embedded_python\tcl\tcl8.6
+
+set "ROOT=%~dp0.."
+set "PYTHONPYCACHEPREFIX=%ROOT%\logs\pycache"
+set "TCL_LIBRARY=%ROOT%\embedded_python\tcl\tcl8.6"
+
+if not exist "%PYTHONPYCACHEPREFIX%" (
+    mkdir "%PYTHONPYCACHEPREFIX%"
+)
 
 echo Updating repo...
-cd ..\JobAssignment
+cd /d "%ROOT%\JobAssignment"
 git pull origin main
-cd /d "%~dp0"
 
-REM === Launch app ===
-set PYTHONPATH=%CD%\embedded_python\lib
-embedded_python\python.exe ..\JobAssignment\ASSigner.py
+echo Launching program...
+"%ROOT%\embedded_python\python.exe" "%ROOT%\JobAssignment\ASSigner.py"
 
 pause
