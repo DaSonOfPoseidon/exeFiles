@@ -17,7 +17,7 @@ git pull origin main || exit /b %ERRORLEVEL%
 
 rem ─── Launch the JobScraper GUI ───────────────────────────────────────────
 echo Launching JobScraper...
-"%ROOT%\embedded_python\python.exe" "%ROOT%\JobScraper\main.py" || exit /b %ERRORLEVEL%
+"%ROOT%\embedded_python\python.exe" -X utf8 "%ROOT%\JobScraper\main.py" || exit /b %ERRORLEVEL%
 
 rem ─── Done ─────────────────────────────────────────────────────────────────
 exit /b 0

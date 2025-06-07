@@ -17,6 +17,6 @@ git pull origin main || exit /b %ERRORLEVEL%
 
 rem ─── Launch the TaskScraper backend ───────────────────────────────────────
 echo Launching TaskScraper...
-"%ROOT%\embedded_python\python.exe" "%ROOT%\TaskScraper\backend.py" || exit /b %ERRORLEVEL%
+"%ROOT%\embedded_python\python.exe" -X utf8 "%ROOT%\TaskScraper\backend.py" || exit /b %ERRORLEVEL%
 
 exit /b 0

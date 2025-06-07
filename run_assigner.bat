@@ -17,6 +17,6 @@ git pull origin main || exit /b %ERRORLEVEL%
 
 rem ─── Launch the Assigner script ──────────────────────────────────────────
 echo Launching Assigner...
-"%ROOT%\embedded_python\python.exe" "%ROOT%\JobAssignment\ASSigner.py" || exit /b %ERRORLEVEL%
+"%ROOT%\embedded_python\python.exe" -X utf8 "%ROOT%\JobAssignment\ASSigner.py" || exit /b %ERRORLEVEL%
 
 exit /b 0
