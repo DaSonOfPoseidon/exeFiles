@@ -22,11 +22,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ github.event.client_payload.version }}
           EXE_NAME: ${{ github.event.client_payload.exe_name }}
-          REPO_NAME: ${{ github.event.client_payload.release_repo }}  # e.g. "JobAssignment"
+          REPO_NAME: ${{ github.event.client_payload.release_repo }}
           OWNER: DaSonOfPoseidon
         run: |
-          echo "Downloading $EXE_NAME version $VERSION from $OWNER/$REPO_NAME release"
-          URL="https://api.github.com/repos/$OWNER/$REPO_NAME/releases/tags/$VERSION"
+          echo "Downloading $EXE_NAME version v$VERSION from $OWNER/$REPO_NAME release"
+          URL="https://api.github.com/repos/$OWNER/$REPO_NAME/releases/tags/v$VERSION"
           ASSET_URL=$(curl -s $URL | jq -r ".assets[] | select(.name==\"$EXE_NAME\") | .url")
           if [ -z "$ASSET_URL" ]; then
             echo "Asset not found in release"
@@ -39,15 +39,15 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add bin/${{ github.event.client_payload.exe_name }}
-          git commit -m "Update ${{ github.event.client_payload.exe_name }} to ${{ github.event.client_payload.version }}" || echo "No changes to commit"
+          git commit -m "Update ${{ github.event.client_payload.exe_name }} to v${{ github.event.client_payload.version }}" || echo "No changes to commit"
           git push origin main
 
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.event.client_payload.version }}
-          name: Release ${{ github.event.client_payload.version }}
+          tag_name: v${{ github.event.client_payload.version }}
+          name: Release v${{ github.event.client_payload.version }}
           body: Automated release of ${{ github.event.client_payload.exe_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -55,6 +55,7 @@ jobs:
       - name: Upload EXE to release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: v${{ github.event.client_payload.version }}
           files: ./bin/${{ github.event.client_payload.exe_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
