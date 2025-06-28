@@ -14,18 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ github.event.client_payload.artifact_name }}
-
       - name: Prepare folders
-        run: |
-          mkdir -p bin
+        run: mkdir -p bin
 
-      - name: Move exe to bin folder
+      - name: Download EXE from build repo release asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.event.client_payload.version }}
+          EXE_NAME: ${{ github.event.client_payload.exe_name }}
+          REPO_NAME: ${{ github.event.client_payload.release_repo }}  # e.g. "JobAssignment"
+          OWNER: DaSonOfPoseidon
         run: |
-          mv ${{ github.event.client_payload.artifact_name }}/*.exe ./bin/${{ github.event.client_payload.exe_name }}
+          echo "Downloading $EXE_NAME version $VERSION from $OWNER/$REPO_NAME release"
+          URL="https://api.github.com/repos/$OWNER/$REPO_NAME/releases/tags/$VERSION"
+          ASSET_URL=$(curl -s $URL | jq -r ".assets[] | select(.name==\"$EXE_NAME\") | .url")
+          if [ -z "$ASSET_URL" ]; then
+            echo "Asset not found in release"
+            exit 1
+          fi
+          curl -L -H "Accept: application/octet-stream" -H "Authorization: token $GITHUB_TOKEN" -o ./bin/$EXE_NAME $ASSET_URL
 
       - name: Commit updated exe
         run: |
