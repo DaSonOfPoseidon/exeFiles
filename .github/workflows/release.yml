@@ -38,6 +38,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git pull --rebase origin main || true
           git add bin/${{ github.event.client_payload.exe_name }}
           git commit -m "Update ${{ github.event.client_payload.exe_name }} to v${{ github.event.client_payload.version }}" || echo "No changes to commit"
           git push origin main
