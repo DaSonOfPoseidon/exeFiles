@@ -53,7 +53,6 @@ jobs:
             git add bin/${{ github.event.client_payload.exe_name }}
           fi
           git commit -m "Update ${{ github.event.client_payload.exe_name }} to v${{ github.event.client_payload.version }}" || echo "No changes to commit"
-          git pull --rebase origin main
           git push origin main
 
       - name: Create GitHub Release
