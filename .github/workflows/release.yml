@@ -34,12 +34,24 @@ jobs:
           fi
           curl -L -H "Accept: application/octet-stream" -H "Authorization: token $GITHUB_TOKEN" -o ./bin/$EXE_NAME $ASSET_URL
 
+      - name: Move CalendarBuddy.exe to root if needed
+        if: ${{ github.event.client_payload.exe_name == 'CalendarBuddy.exe' }}
+        run: |
+          echo "Moving CalendarBuddy.exe to root folder..."
+          mv ./bin/CalendarBuddy.exe ./
+          # Optionally remove bin if empty
+          rmdir ./bin || true
+
       - name: Commit updated exe
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git pull --rebase origin main || true
-          git add bin/${{ github.event.client_payload.exe_name }}
+          if [ "${{ github.event.client_payload.exe_name }}" = "CalendarBuddy.exe" ]; then
+            git add CalendarBuddy.exe
+          else
+            git add bin/${{ github.event.client_payload.exe_name }}
+          fi
           git commit -m "Update ${{ github.event.client_payload.exe_name }} to v${{ github.event.client_payload.version }}" || echo "No changes to commit"
           git push origin main
 
@@ -53,7 +65,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload EXE to release
+      - name: Upload CalendarBuddy.exe
+        if: ${{ github.event.client_payload.exe_name == 'CalendarBuddy.exe' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.event.client_payload.version }}
+          files: ./CalendarBuddy.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload other EXEs
+        if: ${{ github.event.client_payload.exe_name != 'CalendarBuddy.exe' }}
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ github.event.client_payload.version }}
